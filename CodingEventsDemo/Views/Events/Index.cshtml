@@ -1,8 +1,42 @@
 ﻿<h1>Coding Events</h1>
 
-<ul>
-    @foreach (string meeting in ViewBag.events)
-    {
-        <li>@meeting</li>
-    }
-</ul>
+<p>
+    <a asp-controller="Events" asp-action="Add">Add Event</a>
+</p>
+
+<p>
+    <a asp-controller="Events" asp-action="Delete">Remove Event</a>
+</p>
+
+@if (ViewBag.events.Count == 0)
+{
+    <p>No events yet!</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @{int count = 0;
+                foreach (var evt in ViewBag.events)
+                {
+                    count++;
+                        <tr>
+                            <th scope="row">@evt.Id</th>
+                            <td>@evt.Name</td>
+                            <td>@evt.Description</td>
+                            <td><a asp-controller="Events" asp-action="Edit" asp-route-id="@evt.Id">Edit Event</a></td>
+
+                        </tr>
+                }
+               }
+        </tbody>
+    </table>         
+}
