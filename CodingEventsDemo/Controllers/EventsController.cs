@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CodingEventsDemo.Data;
 using CodingEventsDemo.Models;
+using CodingEventsDemo.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -15,15 +16,16 @@ namespace coding_events_practice.Controllers
 
         public IActionResult Index()
         {
+            List<Event> events = new List<Event>(EventData.GetAll());
 
-            ViewBag.events = EventData.GetAll();
-
-            return View();
+            return View(events);
         }
 
         public IActionResult Add()
         {
-            return View();
+            AddEventViewModel addEventViewModel = new AddEventViewModel();
+
+            return View(addEventViewModel);
         }
 
         public IActionResult Delete()
@@ -34,13 +36,22 @@ namespace coding_events_practice.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(Event newEvent)
+        public IActionResult Add(AddEventViewModel addEventViewModel)
         {
-            
-                EventData.Add(newEvent);
-           
+            if (ModelState.IsValid)
+            {
+                Event newEvent = new Event(addEventViewModel.Name, addEventViewModel.Description, addEventViewModel.ContactEmail);
 
-            return Redirect("/Events");
+                EventData.Add(newEvent);
+
+
+                return Redirect("/Events");
+            }
+
+            else 
+            {
+                return View(addEventViewModel);
+            }
         }
 
         [HttpPost]
