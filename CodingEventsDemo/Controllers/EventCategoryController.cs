@@ -19,12 +19,11 @@ namespace CodingEventsDemo.Controllers
             context = dbContext;
         }
 
-
         public IActionResult Index()
         {
-            List<EventCategory> eventsCategory = context.EventsCategory.ToList();
-
-            return View(eventsCategory);
+            //Querry
+            List<EventCategory> categories = context.Categories.ToList();
+            return View(categories);
         }
 
         public IActionResult Create() {
@@ -39,7 +38,7 @@ namespace CodingEventsDemo.Controllers
             {
                 EventCategory newEventCategory = new EventCategory(addEventCategoryViewModel.Name);
 
-                context.EventsCategory.Add(newEventCategory);
+                context.Categories.Add(newEventCategory);
                 context.SaveChanges();
 
                 return Redirect("/EventCategory");

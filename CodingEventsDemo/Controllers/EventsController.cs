@@ -6,7 +6,7 @@ using CodingEventsDemo.Data;
 using CodingEventsDemo.Models;
 using CodingEventsDemo.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace coding_events_practice.Controllers
 {
@@ -22,7 +22,7 @@ namespace coding_events_practice.Controllers
         public IActionResult Index()
         {
             //List<Event> events = new List<Event>(EventData.GetAll());
-            List<Event> events = context.Events.ToList();
+            List<Event> events = context.Events.Include(e => e.Category).ToList();
 
 
             return View(events);
@@ -30,7 +30,8 @@ namespace coding_events_practice.Controllers
 
         public IActionResult Add()
         {
-            AddEventViewModel addEventViewModel = new AddEventViewModel();
+            List<EventCategory> categories = context.Categories.ToList();
+            AddEventViewModel addEventViewModel = new AddEventViewModel(categories);
 
             return View(addEventViewModel);
         }
@@ -40,21 +41,35 @@ namespace coding_events_practice.Controllers
         [HttpPost]
         public IActionResult Add(AddEventViewModel addEventViewModel)
         {
+
             if (ModelState.IsValid)
             {
-                Event newEvent = new Event(addEventViewModel.Name, addEventViewModel.Description, addEventViewModel.ContactEmail);
-
+                //Event newEvent = new Event(addEventViewModel.Name, addEventViewModel.Description, addEventViewModel.ContactEmail);
                 //EventData.Add(newEvent);
+                EventCategory theCategory = context.Categories.Find(addEventViewModel.CategoryId);
+
+                Event newEvent = new Event
+                {            
+
+                    Name = addEventViewModel.Name,
+                    Description = addEventViewModel.Description,
+                    ContactEmail = addEventViewModel.ContactEmail,
+                    Category = theCategory
+                };
+
+
+
                 context.Events.Add(newEvent);
                 context.SaveChanges();
 
                 return Redirect("/Events");
             }
 
-            else 
-            {
-                return View(addEventViewModel);
-            }
+
+            List<EventCategory> categories = context.Categories.ToList(); //reload category list options to make sure they will appear after the data validation errors
+
+            return View(new AddEventViewModel(categories)); //passing new Model Object with categories list options
+           
         }
 
         public IActionResult Delete()
@@ -81,20 +96,39 @@ namespace coding_events_practice.Controllers
         }
 
 
-       /* [Route("Events/Edit/{eventId}")]
-        public IActionResult Edit(int eventId)
+        public IActionResult Detail(int id)
         {
-            ViewBag.eventToEdit = EventData.GetById(eventId);
-            return View();
+           
+                Event theEvent = context.Events
+                .Include(e => e.Category)
+                .Single(e => e.Id == id);
+
+
+            List<EventTag> eventTags = context.EventTags
+              .Where(et => et.EventId == id)
+              .Include(et => et.Tag)
+              .ToList();
+
+            EventDetailViewModel viewModel = new EventDetailViewModel(theEvent, eventTags);
+
+            return View(viewModel);
         }
 
-        [HttpPost]
-        [Route("Events/Edit")]
-        public IActionResult SubmitEditEventForm(int eventId, string name, string description)
-        {
-            EventData.Edit(eventId, name, description);
 
-            return Redirect("/Events");
-        }*/
+        /* [Route("Events/Edit/{eventId}")]
+         public IActionResult Edit(int eventId)
+         {
+             ViewBag.eventToEdit = EventData.GetById(eventId);
+             return View();
+         }
+
+         [HttpPost]
+         [Route("Events/Edit")]
+         public IActionResult SubmitEditEventForm(int eventId, string name, string description)
+         {
+             EventData.Edit(eventId, name, description);
+
+             return Redirect("/Events");
+         }*/
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CodingEventsDemo.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -24,5 +26,29 @@ namespace CodingEventsDemo.ViewModels
 
         [Compare("ContactEmail")]
         public string ConfirmEmail{ get; set; }
+
+         //To see why "int?" got to https://csharp-video-tutorials.blogspot.com/2019/04/select-list-validation-in-aspnet-core.html
+        [Required(ErrorMessage ="Category is required")]
+        public int? CategoryId { get; set; }
+       
+        public List<SelectListItem> Categories { get; set; }
+
+        public AddEventViewModel(List<EventCategory> categories)
+        {
+            Categories = new List<SelectListItem>();
+
+            foreach(var category in categories) 
+            { Categories.Add(
+                new SelectListItem
+                { 
+                  Value =  category.Id.ToString(),
+                  Text = category.Name
+                }
+
+                );; 
+            }
+        }
+
+        public AddEventViewModel() { }
     }
 }

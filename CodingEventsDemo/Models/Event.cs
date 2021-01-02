@@ -13,6 +13,8 @@ namespace CodingEventsDemo.Models
             public string Name { get; set; }
             public string Description { get; set; }
             public string ContactEmail { get; set; }
+            public int CategoryId { get; set; }
+            public EventCategory Category { get; set; }
 
         public Event()
         {
