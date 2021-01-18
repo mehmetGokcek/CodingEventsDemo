@@ -1,7 +1,11 @@
 
 using CodingEventsDemo.Data;
+using CodingEventsDemo.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,8 +26,19 @@ namespace CodingEventsDemo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDbContext<EventDbContext>(options =>
-                  options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            // services.AddDbContext<EventDbContext>(options =>
+            //    options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddRazorPages();
+
+            services.Configure<IdentityOptions>(options =>
+               options.Password.RequiredLength = 10
+               );
+
+            // requires
+            // using Microsoft.AspNetCore.Identity.UI.Services;
+            // using WebPWrecover.Services;
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<AuthMessageSenderOptions>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,7 +58,7 @@ namespace CodingEventsDemo
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -51,6 +66,8 @@ namespace CodingEventsDemo
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                    endpoints.MapRazorPages();
+
             });
         }
     }
