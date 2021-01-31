@@ -25,8 +25,7 @@ namespace coding_events_practice.Controllers
         public IActionResult Index()
         {
             //List<Event> events = new List<Event>(EventData.GetAll());
-            List<Event> events = context.Events.Include(e => e.Category).ToList();
-
+            List<Event> events = context.Events.Include(e => e.Category).Include(e => e.Address).ToList();
 
             return View(events);
         }
@@ -34,7 +33,10 @@ namespace coding_events_practice.Controllers
         public IActionResult Add()
         {
             List<EventCategory> categories = context.Categories.ToList();
-            AddEventViewModel addEventViewModel = new AddEventViewModel(categories);
+
+            EventAddress eventAddress = new EventAddress();
+
+            AddEventViewModel addEventViewModel = new AddEventViewModel(categories, eventAddress);
 
             return View(addEventViewModel);
         }
@@ -51,17 +53,28 @@ namespace coding_events_practice.Controllers
                 //EventData.Add(newEvent);
                 EventCategory theCategory = context.Categories.Find(addEventViewModel.CategoryId);
 
+                EventAddress address = new EventAddress
+                {
+                    Street = addEventViewModel.eventAddress.Street,
+                    City = addEventViewModel.eventAddress.City,
+                    State = addEventViewModel.eventAddress.State,
+                    Zipcode = addEventViewModel.eventAddress.Zipcode,
+                    Latitude = addEventViewModel.eventAddress.Latitude,
+                    Longitude = addEventViewModel.eventAddress.Longitude,
+                };
+
                 Event newEvent = new Event
                 {            
 
                     Name = addEventViewModel.Name,
                     Description = addEventViewModel.Description,
                     ContactEmail = addEventViewModel.ContactEmail,
-                    Category = theCategory
+                    Category = theCategory,
+                    Address = address
                 };
 
 
-
+                context.Addresses.Add(address);
                 context.Events.Add(newEvent);
                 context.SaveChanges();
 
@@ -71,7 +84,7 @@ namespace coding_events_practice.Controllers
 
             List<EventCategory> categories = context.Categories.ToList(); //reload category list options to make sure they will appear after the data validation errors
 
-            return View(new AddEventViewModel(categories)); //passing new Model Object with categories list options
+            return View(new AddEventViewModel(categories, new EventAddress())); //passing new Model Object with categories list options
            
         }
 
@@ -104,8 +117,8 @@ namespace coding_events_practice.Controllers
            
                 Event theEvent = context.Events
                 .Include(e => e.Category)
+                .Include(e => e.Address)
                 .Single(e => e.Id == id);
-
 
             List<EventTag> eventTags = context.EventTags
               .Where(et => et.EventId == id)
@@ -117,21 +130,21 @@ namespace coding_events_practice.Controllers
             return View(viewModel);
         }
 
+/*
+        [Route("Events/Edit/{eventId}")]
+        public IActionResult Edit(int eventId)
+        {
+            ViewBag.eventToEdit = EventData.GetById(eventId);
+            return View();
+        }
 
-        /* [Route("Events/Edit/{eventId}")]
-         public IActionResult Edit(int eventId)
-         {
-             ViewBag.eventToEdit = EventData.GetById(eventId);
-             return View();
-         }
+        [HttpPost]
+        [Route("Events/Edit")]
+        public IActionResult SubmitEditEventForm(int eventId, string name, string description)
+        {
+            EventData.Edit(eventId, name, description);
 
-         [HttpPost]
-         [Route("Events/Edit")]
-         public IActionResult SubmitEditEventForm(int eventId, string name, string description)
-         {
-             EventData.Edit(eventId, name, description);
-
-             return Redirect("/Events");
-         }*/
+            return Redirect("/Events");
+        }*/
     }
 }

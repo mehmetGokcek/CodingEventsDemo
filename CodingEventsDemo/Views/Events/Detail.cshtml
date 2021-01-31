@@ -16,12 +16,66 @@
         <th>Category</th>
         <td> @Model.CategoryName</td>
     </tr>
-
     <tr>
-        <th>Tags</th>
-        <td> @Model.TagText</td>
+        <th>Street</th>
+        <td> @Model.Street</td>
     </tr>
 
-    <a asp-controller="Tag" asp-action="AddEvent" asp-route-id="@Model.EventId">Add Tag</a>
+    <tr>
+        <th>City</th>
+        <td> @Model.City</td>
+    </tr>
+    <tr>
+        <th>State</th>
+        <td> @Model.State</td>
+    </tr>
 
+    <tr>
+        <th>Zip Code</th>
+        <td> @Model.Zipcode</td>
+    </tr>
+
+    @if (Model.TagText != null && Model.TagText != "")
+    {
+        <tr>
+            <th>Tags</th>
+            <td> @Model.TagText</td>
+        </tr>
+
+    }
+
+    else
+    {
+        <tr>
+            <th>Tags</th>
+            <td>
+                <a asp-controller="Tag" asp-action="AddEvent" asp-route-id="@Model.EventId">No tags! Please click here to add a tag</a>
+            </td>
+        </tr>
+    }
 </table>
+
+<div id="GoogleMaps" style="width:50%;height:400px;"></div>
+
+<script>
+        function initMap() {
+            const map = new google.maps.Map(document.getElementById("GoogleMaps"), {
+                center: { lat: @Model.Latitude, lng: @Model.Longitude },
+                zoom: 14,
+            });
+
+            var marker = new google.maps.Marker({
+                position: { lat: @Model.Latitude, lng: @Model.Longitude },
+                map: map,
+                label: "@Model.Name",
+            });
+        }
+
+</script>
+
+<script defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBqXHMNoJJwES8K9SkbOgKejtmsH52QlYo&callback=initMap&libraries=&v=weekly">
+</script>
+
+<br>
+<br>

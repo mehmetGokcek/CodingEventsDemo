@@ -15,7 +15,19 @@ namespace CodingEventsDemo.ViewModels
         public string Description {get; set;}
         public string ContactEmail{ get; set; }
         public string CategoryName{ get; set; }
+        public string Street { get; set; }
+        public string City { get; set; }
+        public string Zipcode { get; set; }
+        public string State { get; set; }
 
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+
+        private const double homeLatitude = 39.0942823;
+
+        private const double homeLongitude = -94.5906067;
+        public double HomeLatitude { get { return homeLatitude; } }
+        public double HomeLongitude { get { return homeLongitude;  } }
 
         public EventDetailViewModel(Event theEvent, List<EventTag> eventTags)
         {
@@ -24,6 +36,12 @@ namespace CodingEventsDemo.ViewModels
             Description = theEvent.Description;
             ContactEmail = theEvent.ContactEmail;
             CategoryName = theEvent.Category.Name;
+            Street = theEvent.Address.Street;
+            City = theEvent.Address.City;
+            Zipcode = theEvent.Address.Zipcode;
+            State = theEvent.Address.State;
+            Latitude = theEvent.Address.Latitude;
+            Longitude = theEvent.Address.Longitude;
 
             TagText = "";
             for (var i = 0; i < eventTags.Count; i++)
@@ -34,6 +52,7 @@ namespace CodingEventsDemo.ViewModels
                     TagText += ", ";
                 }
             }
+
         }
     }
 }

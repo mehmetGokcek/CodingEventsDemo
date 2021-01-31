@@ -20,6 +20,7 @@ namespace CodingEventsDemo.ViewModels
         [StringLength(20, MinimumLength = 6, ErrorMessage = "Sorry, but the description is too short. Description must be at least 6 characters long.")]
         public string Description { get; set; }
 
+
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress]
         public string ContactEmail { get; set; }
@@ -27,13 +28,17 @@ namespace CodingEventsDemo.ViewModels
         [Compare("ContactEmail")]
         public string ConfirmEmail{ get; set; }
 
-         //To see why "int?" got to https://csharp-video-tutorials.blogspot.com/2019/04/select-list-validation-in-aspnet-core.html
+
+        public EventAddress eventAddress { get; set; }
+
+
+        //To see why "int?" got to https://csharp-video-tutorials.blogspot.com/2019/04/select-list-validation-in-aspnet-core.html
         [Required(ErrorMessage ="Category is required")]
         public int? CategoryId { get; set; }
        
         public List<SelectListItem> Categories { get; set; }
 
-        public AddEventViewModel(List<EventCategory> categories)
+        public AddEventViewModel(List<EventCategory> categories, EventAddress newEventAddress)
         {
             Categories = new List<SelectListItem>();
 
@@ -44,9 +49,10 @@ namespace CodingEventsDemo.ViewModels
                   Value =  category.Id.ToString(),
                   Text = category.Name
                 }
-
                 );; 
             }
+
+            EventAddress eventAddress = newEventAddress;
         }
 
         public AddEventViewModel() { }

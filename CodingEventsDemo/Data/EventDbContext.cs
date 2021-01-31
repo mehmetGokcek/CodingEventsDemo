@@ -15,6 +15,8 @@ using Microsoft.EntityFrameworkCore;
             public DbSet<EventCategory> Categories { get; set; }
             public DbSet<Tag> Tags { get; set; }
              public DbSet<EventTag> EventTags { get; set; }
+             public DbSet<EventAddress> Addresses{ get; set; }
+
 
 
         public EventDbContext(DbContextOptions<EventDbContext> options)
